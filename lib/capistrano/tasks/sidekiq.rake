@@ -90,6 +90,9 @@ namespace :sidekiq do
   end
 
   def stop_sidekiq(pid_file, role, idx)
+    # temporary fix incorrect role (currently we have host here)
+    role = (host.roles.to_a & fetch(:sidekiq_role)).first
+ 
     if fetch(:stop_sidekiq_in_background, fetch(:sidekiq_run_in_background))
       if sidekiq_fetch(:use_signals, role, idx)
         background "kill -TERM `cat #{pid_file}`"
@@ -115,6 +118,9 @@ namespace :sidekiq do
   end
 
   def start_sidekiq(pid_file, role, idx = 0)
+    # temporary fix incorrect role (currently we have host here)
+    role = (host.roles.to_a & fetch(:sidekiq_role)).first
+
     args = []
     args.push "--index #{idx}"
     args.push "--pidfile #{pid_file}"
